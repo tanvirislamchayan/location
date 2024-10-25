@@ -26,7 +26,7 @@ class VisitorNotificationMiddleware(MiddlewareMixin):
         response = self.get_response(request)
         return response
 
-    def get_country_from_ip(self, ip='108.162.226.10'):
+    def get_country_from_ip(self, ip):
         print(f'get_country_from_ip')
         try:
             reader = geoip2.database.Reader(f"{settings.GEOIP_PATH}/GeoLite2-Country.mmdb")
