@@ -145,5 +145,13 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Ensure session expires when the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Optional: Force session cookie to have a short lifespan
+# (In case the browser doesn't handle SESSION_EXPIRE_AT_BROWSER_CLOSE properly)
+SESSION_COOKIE_AGE = 300  # Forces the session to expire on browser close
+
+
 
 # https://api.telegram.org/bot7836526560:AAHArrQRQ_Ps6PUS1amy0vTrI_XFvB2L2y0/getUpdates

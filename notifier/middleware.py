@@ -9,24 +9,33 @@ class VisitorNotificationMiddleware(MiddlewareMixin):
         self.get_response = get_response
 
     def __call__(self, request):
-        # Get the client IP
-        ip, _ = get_client_ip(request)
-        # ip = '223.25.252.21'
-        
-        print(f'ip {ip}')
-        if ip:
-            # Determine the visitor's country
-            country = self.get_country_from_ip(ip)
+        # Check if the 'session_visit' cookie is set
+        session_visit = request.COOKIES.get('session_visit')
 
-            # Send a notification to Telegram
-            message = f"New visitor from {country} (IP: {ip}) visited the site. Developed By Tanvir Islam"
-            send_telegram_message(message)
+        if not session_visit:
+            # Get the client IP
+            ip, _ = get_client_ip(request)
+            print(f'ip {ip}')
 
-        # Continue processing the request
-        response = self.get_response(request)
-        return response
+            if ip:
+                # Determine the visitor's country
+                country = self.get_country_from_ip(ip)
 
-    def get_country_from_ip(self, ip):
+                # Send a notification to Telegram
+                message = f"New visitor from {country} (IP: {ip}) visited the site. Developed By Tanvir Islam"
+                send_telegram_message(message)
+
+            # Continue processing the request
+            response = self.get_response(request)
+
+            # Set the 'session_visit' cookie to mark the session
+            response.set_cookie('session_visit', 'true')
+            return response
+        else:
+            # Continue processing the request if cookie is already set
+            return self.get_response(request)
+
+    def get_country_from_ip(self, ip='108.162.226.10'):
         print(f'get_country_from_ip')
         try:
             reader = geoip2.database.Reader(f"{settings.GEOIP_PATH}/GeoLite2-Country.mmdb")
